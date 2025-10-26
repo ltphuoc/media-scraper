@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Page {
+  id         Int      @id @default(autoincrement())
+  url        String   @unique
+  createdAt  DateTime @default(now())
+  mediaItems Media[]
+}
+
+model Media {
+  id         Int      @id @default(autoincrement())
+  type       MediaType
+  url        String
+  pageId     Int
+  page       Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([type])
+  @@index([url])
+  @@unique([pageId, url, type])
+}
+
+enum MediaType {
+  image
+  video
+}

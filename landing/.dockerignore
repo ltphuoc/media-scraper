@@ -1,0 +1,53 @@
+# ----------------------------
+# Node & Build Files
+# ----------------------------
+node_modules
+.next
+out
+dist
+build
+.cache
+coverage
+
+# ----------------------------
+# Environment & Config Files
+# ----------------------------
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# pnpm & npm cache
+.pnpm-store
+.npm
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ----------------------------
+# Git / IDE / OS files
+# ----------------------------
+.git
+.gitignore
+.gitattributes
+.DS_Store
+.idea
+.vscode
+*.swp
+*.swo
+Thumbs.db
+
+# ----------------------------
+# Miscellaneous
+# ----------------------------
+*.log
+*.map
+*.zip
+*.tar
+*.gz
+*.bak
+*.tmp
+*.lock
+*.cache

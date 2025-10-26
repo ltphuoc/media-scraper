@@ -1,0 +1,25 @@
+config:
+  target: 'http://localhost:4000'
+  phases:
+    - duration: 60
+      arrivalRate: 100 # 100 req/sec * 60s = ~6000 requests
+      name: 'Spike 5000 req/min'
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Basic YWRtaW46YWRtaW4='
+  plugins:
+    expect: {}
+
+scenarios:
+  - name: Bulk scrape test
+    flow:
+      - post:
+          url: '/api/scrape'
+          json:
+            urls:
+              - 'https://picsum.photos'
+              - 'https://react.dev'
+              - 'https://www.youtube.com/watch?v=rVdR0_Ujgq4'
+          expect:
+            - statusCode: 200
