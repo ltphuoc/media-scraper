@@ -11,12 +11,12 @@ help:
 	@echo ""
 	@echo "🚀 $(PROJECT_NAME) Commands:"
 	@echo "--------------------------------------------"
+	@echo "🟢 make start    -> Full lifecycle: build, start, wait for health, run smoke + load tests"
 	@echo "make up           -> Build & start all services (API, Worker, DB, Redis, Landing, Dashboard)"
 	@echo "make down         -> Stop and remove containers"
 	@echo "make logs         -> Tail logs for API + Worker"
 	@echo "make smoke        -> Run smoke test (Artillery)"
 	@echo "make load         -> Run load test (Artillery, ~5000 requests)"
-	@echo "make report       -> Generate HTML report from last load test"
 	@echo "make clean        -> Stop and remove containers + volumes"
 	@echo "--------------------------------------------"
 
@@ -29,6 +29,9 @@ start:
 	else \
 		echo "✅ .env file already exists."; \
 	fi
+
+	@echo "📂 Copying .env → api/.env ..."
+	@cp .env api/.env
 
 	@echo "🧱 [1/3] Building and starting $(PROJECT_NAME) services..."
 	$(DOCKER_COMPOSE) up --build -d
@@ -44,7 +47,12 @@ start:
 	done'
 
 	@echo "🧪 [3/3] Running smoke test..."
-	$(ARTILLERY) run tests/smoke-test.yml || (echo "❌ Smoke test failed!" && exit 1)
+	@if $(ARTILLERY) run tests/smoke-test.yml; then \
+  	echo "✅ Smoke test passed!"; \
+	else \
+  	echo "❌ Smoke test failed!"; \
+  	exit 1; \
+	fi
 
 	@echo "💥 Running load test (~5000 requests)..."
 	$(ARTILLERY) run tests/load-test.yml --output $(REPORT_FILE)
@@ -59,6 +67,13 @@ start:
 	@echo "--------------------------------------------"
 
 up:
+	@echo "🔍 Ensuring .env exists and copying..."
+	@if [ ! -f .env ]; then \
+		echo "⚙️  No .env found, creating one from .env.example..."; \
+		cp .env.example .env; \
+	fi
+	@cp .env api/.env
+
 	@echo "🧱 Building and starting $(PROJECT_NAME) services..."
 	$(DOCKER_COMPOSE) up --build -d
 
