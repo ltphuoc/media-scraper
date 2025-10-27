@@ -32,8 +32,12 @@ export const createApp = () => {
   app.use('/api', jobRoutes)
   app.use('/api', mediaRoutes)
 
-  app.get('/health', async (_req, res) => {
-    res.json({ status: 'ok', uptime: process.uptime() })
+  app.get('/health', (_, res) => {
+    res.json({
+      status: 'ok',
+      env: process.env.NODE_ENV,
+      uptime: process.uptime(),
+    })
   })
 
   app.use(errorHandler)
