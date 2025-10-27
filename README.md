@@ -17,13 +17,13 @@ A full-stack web scraper system built with Node.js, Redis, PostgreSQL, and Next.
 
 ## ▶️ Start Project (1 CLI)
 
-Build, start all services (API, Worker, DB, Redis, Landing, DashboardO) and run smoke/load tests:
+Build, start all services (API, Worker, DB, Redis, Landing, Queue Dashboard) and run smoke/load tests:
 
 ```bash
 make start
 ```
 
-Build and start all services (API, Worker, DB, Redis, Landing, Dashboard):
+Build and start all services (API, Worker, DB, Redis, Landing, Queue Dashboard):
 
 ```bash
 make up
