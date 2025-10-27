@@ -4,10 +4,6 @@ services:
     restart: always
     env_file:
       - .env
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
@@ -26,7 +22,7 @@ services:
     ports:
       - '${REDIS_PORT}:6379'
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ['CMD-SHELL', 'redis-cli', 'ping']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -39,12 +35,7 @@ services:
     ports:
       - '${API_PORT}:4000'
     environment:
-      DATABASE_URL: ${DATABASE_URL}
-      REDIS_URL: ${REDIS_URL}
-      BASIC_AUTH_USER: ${BASIC_AUTH_USER}
-      BASIC_AUTH_PASS: ${BASIC_AUTH_PASS}
       PORT: ${API_PORT}
-      NODE_ENV: ${NODE_ENV}
       PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
       PUPPETEER_SKIP_DOWNLOAD: 'true'
       QUEUE_CONCURRENCY: ${QUEUE_CONCURRENCY}
@@ -62,16 +53,12 @@ services:
   worker:
     build: ./api
     restart: always
-    command: ['node', 'dist/lib/queue.js']
+    entrypoint: ['dumb-init', 'node', 'dist/lib/queue.js']
     env_file:
       - .env
     environment:
-      DATABASE_URL: ${DATABASE_URL}
-      REDIS_URL: ${REDIS_URL}
-      NODE_ENV: ${NODE_ENV}
       PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
       PUPPETEER_SKIP_DOWNLOAD: 'true'
-      QUEUE_CONCURRENCY: ${QUEUE_CONCURRENCY}
     depends_on:
       db:
         condition: service_healthy
@@ -86,8 +73,6 @@ services:
     ports:
       - '${FRONTEND_PORT}:3000'
     environment:
-      NODE_ENV: ${NODE_ENV}
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
       NEXT_PUBLIC_BASIC_USER: ${BASIC_AUTH_USER}
       NEXT_PUBLIC_BASIC_PASS: ${BASIC_AUTH_PASS}
     depends_on:
