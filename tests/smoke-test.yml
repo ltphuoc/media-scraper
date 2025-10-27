@@ -1,5 +1,5 @@
 config:
-  target: 'http://localhost:4000'
+  target: 'http://localhost:4000/api'
   phases:
     - duration: 5
       arrivalRate: 1
@@ -22,7 +22,7 @@ scenarios:
   - name: 'Smoke - scrape single URL'
     flow:
       - post:
-          url: '/api/scrape'
+          url: '/scrape'
           json:
             urls: ['https://react.dev']
           expect:
@@ -31,6 +31,6 @@ scenarios:
   - name: 'Smoke - get medias'
     flow:
       - get:
-          url: '/api/media?page=1&limit=20'
+          url: '/media?page=1&limit=20'
           expect:
             - statusCode: 200

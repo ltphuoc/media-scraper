@@ -21,24 +21,14 @@ help:
 	@echo "--------------------------------------------"
 
 # === CORE ===
-start:
-	@echo "🔍 Checking environment file..."
-	@if [ ! -f .env ]; then \
-		echo "⚙️  No .env found, creating one from .env.example..."; \
-		cp .env.example .env; \
-	else \
-		echo "✅ .env file already exists."; \
-	fi
 
-	@echo "📂 Copying .env → api/.env ..."
-	@cp .env api/.env
-
+start: setup
 	@echo "🧱 [1/3] Building and starting $(PROJECT_NAME) services..."
 	$(DOCKER_COMPOSE) up --build -d
 
 	@echo "⏳ [2/3] Waiting for API healthcheck (up to 60 seconds)..."
 	@bash -c 'for i in {1..30}; do \
-		if curl -fs http://localhost:4000/health > /dev/null 2>&1; then \
+		if curl -fs http://localhost:4000/api/health > /dev/null 2>&1; then \
 			echo "\n✅ API is healthy!"; \
 			break; \
 		fi; \
@@ -61,21 +51,29 @@ start:
 	@echo "🎉 All services started and tested successfully!"
 	@echo "--------------------------------------------"
 	@echo "🌐 Frontend: http://localhost:3000"
-	@echo "🔗 API:      http://localhost:4000"
+	@echo "🔗 API:      http://localhost:4000/api"
+	@echo "🔗 API Docs:      http://localhost:4000/api/docs"
 	@echo "🔗 Queue:    http://localhost:4000/admin/queues"
 	@echo "📈 Report:   artillery-report.json"
 	@echo "--------------------------------------------"
 
-up:
-	@echo "🔍 Ensuring .env exists and copying..."
+up: setup
+	@echo "🧱 Building and starting $(PROJECT_NAME) services..."
+	$(DOCKER_COMPOSE) up --build -d
+
+setup:
+	@echo "🔍 Checking environment file..."
 	@if [ ! -f .env ]; then \
 		echo "⚙️  No .env found, creating one from .env.example..."; \
 		cp .env.example .env; \
+	else \
+		echo "✅ .env file already exists."; \
 	fi
-	@cp .env api/.env
 
-	@echo "🧱 Building and starting $(PROJECT_NAME) services..."
-	$(DOCKER_COMPOSE) up --build -d
+	@for dir in api landing; do \
+		echo "📂 Copying .env → $$dir/.env ..."; \
+		cp .env $$dir/.env; \
+	done
 
 down:
 	@echo "🧹 Stopping services..."

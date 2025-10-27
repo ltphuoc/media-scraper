@@ -31,11 +31,12 @@ make up
 
 Access:
 
-- API → http://localhost:4000
+- API → http://localhost:4000/api
 - API Docs (Swagger) → http://localhost:4000/api/docs
 - Landing →
-  - http://localhost:3000 (Submit requests URLs)
-  - http://localhost:3000/media (View media items)
+  - http://localhost:3000/dashboard (Submit requests URLs)
+  - http://localhost:3000/dashboard/media (View media items)
+  - http://localhost:3000/dashboard/metrics (View metrics)
 - Queue Dashboard → http://localhost:4000/admin/queues
 
 ---

@@ -1,5 +1,5 @@
 config:
-  target: 'http://localhost:4000'
+  target: 'http://localhost:4000/api'
   phases:
     - duration: 60
       arrivalRate: 100 # 100 req/sec * 60s = ~6000 requests
@@ -15,7 +15,7 @@ scenarios:
   - name: Bulk scrape test
     flow:
       - post:
-          url: '/api/scrape'
+          url: '/scrape'
           json:
             urls:
               - 'https://picsum.photos'
