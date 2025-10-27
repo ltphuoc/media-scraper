@@ -1,7 +1,4 @@
-import { queryClient } from '@/lib/queryClient'
-import { QueryClientProvider } from '@tanstack/react-query'
 import type { Metadata } from 'next'
-import { Navbar } from './_ui/Navbar'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -16,12 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-gray-50 min-h-screen">
-        <QueryClientProvider client={queryClient}>
-          <Navbar />
-          <main className="container mx-auto p-6">{children}</main>
-        </QueryClientProvider>
-      </body>
+      <body className="bg-gray-50 min-h-screen">{children}</body>
     </html>
   )
 }

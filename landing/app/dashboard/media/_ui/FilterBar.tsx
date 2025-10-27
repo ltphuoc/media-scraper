@@ -1,8 +1,10 @@
 'use client'
 
 import { MediaType } from '@/lib/api.service'
-import { MODE, VIEW } from '@/lib/utils/enum'
+import { MODE, SEARCH_PARAMS, VIEW } from '@/lib/utils/enum'
 import { LayoutGrid, List, RotateCcw, Search } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useDebounce } from 'use-debounce'
 
 type Props = {
   view: VIEW
@@ -15,13 +17,22 @@ type Props = {
 }
 
 export default function FilterBar({ view, mode, type, search, limit, onChange, onReset }: Props) {
+  const [text, setText] = useState(search)
+  const [debounced] = useDebounce(text, 500)
+
+  useEffect(() => {
+    if (debounced !== search) {
+      onChange(SEARCH_PARAMS.Search, debounced)
+    }
+  }, [debounced, onChange, search])
+
   return (
     <div className="space-y-3 mx-auto">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-1 sm:items-center sm:gap-3">
           <select
             value={type ?? 'all'}
-            onChange={(e) => onChange('type', e.target.value === 'all' ? undefined : e.target.value)}
+            onChange={(e) => onChange(SEARCH_PARAMS.Type, e.target.value === 'all' ? undefined : e.target.value)}
             aria-label="Filter by media type"
             className="w-full sm:w-40 px-3 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
           >
@@ -35,8 +46,8 @@ export default function FilterBar({ view, mode, type, search, limit, onChange, o
             <input
               type="text"
               placeholder="Search by URL..."
-              value={search}
-              onChange={(e) => onChange('search', e.target.value)}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
               aria-label="Search media by URL"
               className="w-full pl-9 pr-3 py-2 rounded-md border border-input bg-background text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
             />
@@ -47,7 +58,7 @@ export default function FilterBar({ view, mode, type, search, limit, onChange, o
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
         <select
           value={mode}
-          onChange={(e) => onChange('mode', e.target.value)}
+          onChange={(e) => onChange(SEARCH_PARAMS.Mode, e.target.value)}
           aria-label="Select display mode"
           className="w-full sm:w-40 px-3 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
         >
@@ -57,7 +68,7 @@ export default function FilterBar({ view, mode, type, search, limit, onChange, o
 
         <select
           value={String(limit)}
-          onChange={(e) => onChange('limit', e.target.value)}
+          onChange={(e) => onChange(SEARCH_PARAMS.Limit, e.target.value)}
           aria-label="Items per page"
           className="w-full sm:w-32 px-3 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
         >
@@ -70,7 +81,7 @@ export default function FilterBar({ view, mode, type, search, limit, onChange, o
         <div className="flex items-center gap-2">
           <div className="inline-flex items-center gap-1 rounded-lg border border-border bg-muted p-1">
             <button
-              onClick={() => onChange('view', VIEW.Grid)}
+              onClick={() => onChange(SEARCH_PARAMS.View, VIEW.Grid)}
               title="Grid view"
               aria-label="Switch to grid view"
               aria-pressed={view === VIEW.Grid}
@@ -83,7 +94,7 @@ export default function FilterBar({ view, mode, type, search, limit, onChange, o
               <LayoutGrid className="size-4" />
             </button>
             <button
-              onClick={() => onChange('view', VIEW.List)}
+              onClick={() => onChange(SEARCH_PARAMS.View, VIEW.List)}
               title="List view"
               aria-label="Switch to list view"
               aria-pressed={view === VIEW.List}

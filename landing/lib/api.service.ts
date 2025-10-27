@@ -30,6 +30,31 @@ type GetMediaResponse = {
   }
 }
 
+export type Metrics = {
+  status: string
+  uptimeSeconds: number
+  requests: number
+  memory: {
+    totalMB: string
+    heapUsedMB: string
+    heapTotalMB: string
+    heapUsedPercent: string
+  }
+  cpu: {
+    userMs: string
+    systemMs: string
+    usagePercent: string
+  }
+  redisMemory: string
+  queue: {
+    waiting: number
+    active: number
+    completed: number
+    failed: number
+  }
+  timestamp: string
+}
+
 export enum MediaType {
   Image = 'image',
   Video = 'video',
@@ -47,4 +72,6 @@ export const apiService = {
   getJob: (id: string): Promise<GetJobResponse> => axiosInstance.get(`/scrape/${id}`),
 
   getMedia: (params: getMediaParams): Promise<GetMediaResponse> => axiosInstance.get('/media', { params }),
+
+  getMetrics: (): Promise<Metrics> => axiosInstance.get('/metrics'),
 }

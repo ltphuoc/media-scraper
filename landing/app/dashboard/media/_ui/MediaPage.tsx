@@ -5,7 +5,6 @@ import useFilterQueryString from '@/lib/hooks/useFilterQueryString'
 import { MODE, SEARCH_PARAMS, VIEW } from '@/lib/utils/enum'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { useDebounce } from 'use-debounce'
 
 import FilterBar from './FilterBar'
 import MediaGrid from './MediaGrid'
@@ -20,9 +19,8 @@ export default function MediaPage() {
   const search = searchParams.get(SEARCH_PARAMS.Search) || ''
   const mode = (searchParams.get(SEARCH_PARAMS.Mode) as MODE) || MODE.Pagination
   const view = (searchParams.get(SEARCH_PARAMS.View) as VIEW) || VIEW.Grid
-  const [debouncedSearch] = useDebounce(search, 500)
 
-  const commonParams = useMemo(() => ({ limit, type, search: debouncedSearch }), [limit, type, debouncedSearch])
+  const commonParams = useMemo(() => ({ limit, type, search }), [limit, type, search])
 
   const {
     data: pageData,
