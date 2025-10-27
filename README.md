@@ -17,10 +17,16 @@ A full-stack web scraper system built with Node.js, Redis, PostgreSQL, and Next.
 
 ## ▶️ Start Project (1 CLI)
 
-Build and start all services (API, Worker, DB, Redis, Landing, Dashboard):
+Build, start all services (API, Worker, DB, Redis, Landing, DashboardO) and run smoke/load tests:
 
 ```bash
 make start
+```
+
+Build and start all services (API, Worker, DB, Redis, Landing, Dashboard):
+
+```bash
+make up
 ```
 
 Access:
@@ -38,8 +44,22 @@ Access:
 
 ### Monitoring
 
+Log All:
+
 ```bash
 make logs
+```
+
+Log API:
+
+```bash
+make logs-api
+```
+
+Log Worker:
+
+```bash
+make logs-worker
 ```
 
 ### Smoke Test
@@ -60,11 +80,11 @@ make load
 
 ## 🧹 Stop & Clean
 
+Stops and removes all containers and volumes.
+
 ```bash
 make clean
 ```
-
-Stops and removes all containers and volumes.
 
 ---
 

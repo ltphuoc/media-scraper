@@ -85,6 +85,14 @@ logs:
 	@echo "📜 Showing logs..."
 	$(DOCKER_COMPOSE) logs -f api worker
 
+logs-api:
+	@echo "📜 Showing logs..."
+	$(DOCKER_COMPOSE) logs -f api
+
+logs-worker:
+	@echo "📜 Showing logs..."
+	$(DOCKER_COMPOSE) logs -f worker
+
 clean:
 	@echo "🔥 Removing containers and volumes..."
 	$(DOCKER_COMPOSE) down -v
