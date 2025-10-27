@@ -137,7 +137,7 @@ router.get('/scrape/:id', async (req, res, next) => {
 
     const state = await job.getState()
     const progress = job.progress ?? 0
-    const result = job.returnvalue
+    const result = job.returnvalue || job.data.result || null
 
     res.json({
       id: job.id,

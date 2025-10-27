@@ -6,7 +6,7 @@ export const logger = pino({
       ? undefined
       : {
           target: 'pino-pretty',
-          options: { colorize: true, translateTime: 'HH:MM:ss' },
+          options: { colorize: true, translateTime: 'HH:MM:ss', singleLine: true },
         },
   level: process.env.LOG_LEVEL || 'info',
 })

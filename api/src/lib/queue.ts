@@ -7,6 +7,7 @@ import { scrapeMediaURLs } from './scrape'
 export const scrapeQueue = new Queue('scrape', { connection })
 export const scrapeQueueEvents = new QueueEvents('scrape', { connection })
 
+const concurrency = Number(process.env.WORKER_CONCURRENCY ?? 2)
 export const scrapeWorker = new Worker(
   'scrape',
   async (job: Job<{ urls: string[] }>) => {
@@ -16,52 +17,38 @@ export const scrapeWorker = new Worker(
 
     logger.info(`🚀 [Worker] Starting job ${job.id} with ${totalUrls} URL(s)`)
 
-    for (let i = 0; i < totalUrls; i++) {
-      const url = urls[i]
-      const progress = Math.round(((i + 1) / totalUrls) * 100)
+    const CHUNK_SIZE = 2
+    for (let i = 0; i < totalUrls; i += CHUNK_SIZE) {
+      const chunk = urls.slice(i, i + CHUNK_SIZE)
+      const chunkResults = await Promise.all(
+        chunk.map(async (url) => {
+          try {
+            const { images, videos } = await scrapeMediaURLs(url)
 
-      try {
-        const { images, videos } = await scrapeMediaURLs(url)
+            const page = await prisma.page.upsert({
+              where: { url },
+              update: {},
+              create: { url },
+            })
 
-        const page = await prisma.page.upsert({
-          where: { url },
-          update: {},
-          create: { url },
+            const data = [
+              ...images.map((u) => ({ type: 'image' as const, url: u, pageId: page.id })),
+              ...videos.map((u) => ({ type: 'video' as const, url: u, pageId: page.id })),
+            ]
+            if (data.length) await prisma.media.createMany({ data, skipDuplicates: true })
+
+            logger.info(`✅ [Worker] ${url} (${images.length} img / ${videos.length} vid)`)
+            return { url, images: images.length, videos: videos.length, success: true }
+          } catch (err) {
+            const message = err instanceof Error ? err.message : String(err)
+            logger.error(`❌ [Worker] ${url} failed: ${message}`)
+            return { url, images: 0, videos: 0, success: false, error: message }
+          }
         })
-
-        const mediaRecords = [
-          ...images.map((m) => ({ type: 'image' as const, url: m, pageId: page.id })),
-          ...videos.map((m) => ({ type: 'video' as const, url: m, pageId: page.id })),
-        ]
-
-        if (mediaRecords.length) {
-          await prisma.media.createMany({ data: mediaRecords, skipDuplicates: true })
-        }
-
-        await job.updateProgress(progress)
-
-        results.push({
-          url,
-          images: images.length,
-          videos: videos.length,
-          success: true,
-        })
-
-        logger.info(`✅ [Worker] Scraped ${url} (${images.length} img / ${videos.length} vid)`)
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err)
-        const errorType = err instanceof Error ? err.constructor.name : 'UnknownError'
-        logger.error(`❌ [Worker] Error scraping ${url}: ${message}`)
-
-        results.push({
-          url,
-          error: message,
-          errorType,
-          success: false,
-          images: 0,
-          videos: 0,
-        })
-      }
+      )
+      results.push(...chunkResults)
+      const progress = Math.min(Math.round(((i + chunk.length) / totalUrls) * 100), 100)
+      await job.updateProgress(progress)
     }
 
     logger.info(`🏁 [Worker] Job ${job.id} completed with ${results.length} results`)
@@ -69,7 +56,7 @@ export const scrapeWorker = new Worker(
   },
   {
     connection,
-    concurrency: Number(process.env.WORKER_CONCURRENCY ?? 2),
+    concurrency,
   }
 )
 
