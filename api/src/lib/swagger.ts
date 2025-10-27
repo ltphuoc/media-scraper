@@ -1,6 +1,6 @@
+import { Express } from 'express'
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
-import { Express } from 'express'
 
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -9,22 +9,19 @@ const options: swaggerJsdoc.Options = {
       title: '📸 Media Scraper API',
       version: '1.0.0',
       description: `
-      <h3>Media Scraper System</h3>
-      <p>
-        This API allows you to submit websites to be scraped for <b>images</b> and <b>videos</b>,
-        store the results in a SQL database, and query them with pagination & filters.
-      </p>
-      <p>
-        It also supports an asynchronous <b>Redis Queue (BullMQ)</b> model to handle
-        high concurrency (5000+ simultaneous requests) efficiently.
-      </p>
-      <hr/>
-      <ul>
-        <li>✅ <b>Swagger UI:</b> <code>/api/docs</code></li>
-        <li>✅ <b>Bull Board Dashboard:</b> <code>/admin/queues</code></li>
-        <li>✅ <b>Auth:</b> Basic Auth (<code>admin / admin</code>)</li>
-      </ul>
-    `,
+      📸 Media Scraper System
+
+      This API allows you to submit websites to be scraped for images and videos,
+      store the results in a SQL database, and query them with pagination and filters.
+
+      It also supports an asynchronous Redis Queue (BullMQ) model to handle
+      high concurrency (5000+ simultaneous requests) efficiently.
+
+      Features:
+      - ✅ Swagger UI: /api/docs
+      - ✅ Bull Board Dashboard: /admin/queues
+      - ✅ Auth: Basic Auth (username: admin / password: admin)
+      `,
     },
     servers: [
       {

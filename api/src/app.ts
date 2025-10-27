@@ -7,6 +7,7 @@ import { errorHandler } from './middlewares/error'
 import { loggingMiddleware } from './middlewares/logging'
 import jobRoutes from './routes/job.routes'
 import mediaRoutes from './routes/media.routes'
+import monitorRoutes from './routes/monitor.routes'
 
 export const createApp = () => {
   const app = express()
@@ -25,20 +26,13 @@ export const createApp = () => {
 
   setupSwagger(app)
 
+  app.use('/api', monitorRoutes)
   app.use('/api', basicAuthMiddleware)
 
   // Routes API
   app.use('/admin/queues', serverAdapter.getRouter())
   app.use('/api', jobRoutes)
   app.use('/api', mediaRoutes)
-
-  app.get('/health', (_, res) => {
-    res.json({
-      status: 'ok',
-      env: process.env.NODE_ENV,
-      uptime: process.uptime(),
-    })
-  })
 
   app.use(errorHandler)
 
