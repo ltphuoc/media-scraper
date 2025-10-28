@@ -1,7 +1,7 @@
 'use client'
 
-const USERNAME = 'admin'
-const PASSWORD = 'admin'
+const USERNAME = process.env.NEXT_PUBLIC_BASIC_USER || 'admin'
+const PASSWORD = process.env.NEXT_PUBLIC_BASIC_PASS || 'admin'
 
 export function login(username: string, password: string) {
   if (username === USERNAME && password === PASSWORD) {
